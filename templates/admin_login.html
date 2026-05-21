@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .admin-login-page {
+    min-height: calc(100vh - 68px - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(14,15,20,0.06) 0%, transparent 70%),
+      var(--surface);
+  }
+
+  .admin-login-wrap {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ── Card ── */
+  .admin-card {
+    background: var(--ink);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 4px 6px rgba(0,0,0,0.12),
+      0 24px 64px rgba(0,0,0,0.22),
+      0 0 0 1px rgba(255,255,255,0.03);
+  }
+
+  /* ── Top accent ── */
+  .admin-card-accent {
+    height: 3px;
+    background: linear-gradient(90deg, var(--saffron) 0%, var(--saffron-2) 60%, transparent 100%);
+  }
+
+  /* ── Header ── */
+  .admin-card-header {
+    padding: 32px 36px 28px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .admin-card-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(232,114,12,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Shield icon */
+  .admin-shield {
+    width: 48px; height: 48px;
+    background: rgba(232,114,12,0.12);
+    border: 1px solid rgba(232,114,12,0.2);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  .admin-shield svg {
+    width: 22px; height: 22px;
+    fill: none; stroke: var(--saffron);
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .admin-eyebrow {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--saffron-2);
+    margin-bottom: 5px;
+    position: relative;
+  }
+
+  .admin-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.03em;
+    margin: 0 0 4px;
+    position: relative;
+  }
+
+  .admin-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    margin: 0;
+    position: relative;
+  }
+
+  /* ── Body ── */
+  .admin-card-body {
+    padding: 28px 36px 36px;
+  }
+
+  /* ── Fields ── */
+  .field-group { margin-bottom: 16px; }
+
+  .field-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 8px;
+  }
+
+  .field-wrap { position: relative; }
+
+  .field-icon {
+    position: absolute;
+    left: 14px; top: 50%; transform: translateY(-50%);
+    width: 15px; height: 15px;
+    fill: none; stroke: rgba(255,255,255,0.25);
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    pointer-events: none;
+    transition: stroke 0.15s;
+  }
+
+  .field-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 14px 12px 42px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    appearance: none;
+  }
+
+  .field-input::placeholder {
+    color: rgba(255,255,255,0.2);
+    font-weight: 400;
+  }
+
+  .field-input:focus {
+    border-color: var(--saffron);
+    background: rgba(255,255,255,0.07);
+    box-shadow: 0 0 0 3px rgba(232,114,12,0.15);
+  }
+
+  .field-wrap:focus-within .field-icon {
+    stroke: var(--saffron);
+  }
+
+  /* Password toggle */
+  .pwd-toggle {
+    position: absolute;
+    right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; padding: 4px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.25);
+    display: flex; align-items: center;
+    border-radius: 6px;
+    transition: color 0.15s;
+  }
+
+  .pwd-toggle:hover { color: rgba(255,255,255,0.6); }
+
+  .pwd-toggle svg {
+    width: 15px; height: 15px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .field-input.has-toggle { padding-right: 42px; }
+
+  /* ── Submit ── */
+  .btn-admin-login {
+    width: 100%;
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--saffron) 0%, var(--saffron-2) 100%);
+    color: #fff;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 15px; font-weight: 700;
+    padding: 13px 24px;
+    border-radius: 12px;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(232,114,12,0.3);
+    transition: all 0.18s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-admin-login:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(232,114,12,0.45);
+  }
+
+  .btn-admin-login:active { transform: translateY(0); }
+
+  .btn-admin-login svg {
+    width: 16px; height: 16px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ── Footer note ── */
+  .admin-footer-note {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  .admin-footer-note svg {
+    width: 12px; height: 12px;
+    fill: none; stroke: rgba(255,255,255,0.25);
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ── Back link ── */
+  .back-link {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 18px;
+    font-size: 13px; font-weight: 500;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .back-link:hover { color: var(--saffron); text-decoration: none; }
+
+  .back-link svg {
+    width: 13px; height: 13px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+</style>
+
+<div class="admin-login-page">
+  <div class="admin-login-wrap">
+
+    <div class="admin-card">
+      <div class="admin-card-accent"></div>
+
+      <!-- Header -->
+      <div class="admin-card-header">
+        <div class="admin-shield">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+        </div>
+        <p class="admin-eyebrow">Restricted Access</p>
+        <h2 class="admin-title">Admin Login</h2>
+        <p class="admin-subtitle">Authorized personnel only</p>
+      </div>
+
+      <!-- Form -->
+      <div class="admin-card-body">
+        <form method="POST" autocomplete="on">
+
+          <!-- Email -->
+          <div class="field-group">
+            <label class="field-label" for="admin-email">Email Address</label>
+            <div class="field-wrap">
+              <input
+                id="admin-email"
+                name="email"
+                type="email"
+                placeholder="admin@hometutorhub.in"
+                class="field-input"
+                autocomplete="email"
+                required
+              >
+              <svg class="field-icon" viewBox="0 0 24 24">
+                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="field-group">
+            <label class="field-label" for="admin-password">Password</label>
+            <div class="field-wrap">
+              <input
+                id="admin-password"
+                name="password"
+                type="password"
+                placeholder="Enter admin password"
+                class="field-input has-toggle"
+                autocomplete="current-password"
+                required
+              >
+              <svg class="field-icon" viewBox="0 0 24 24">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Show password">
+                <svg viewBox="0 0 24 24" id="eyeIcon">
+                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-admin-login">
+            <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Access Dashboard
+          </button>
+
+        </form>
+
+        <!-- Footer note -->
+        <div class="admin-footer-note">
+          <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          Session is encrypted &nbsp;·&nbsp; Admin access only
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Back to home -->
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to hometutorhub
+    </a>
+
+  </div>
+</div>
+
+<script>
+  const pwdToggle = document.getElementById('pwdToggle');
+  const pwdInput  = document.getElementById('admin-password');
+  const eyeIcon   = document.getElementById('eyeIcon');
+
+  const eyeOpen   = `<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+  const eyeClosed = `<path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`;
+
+  pwdToggle.addEventListener('click', () => {
+    const show = pwdInput.type === 'password';
+    pwdInput.type = show ? 'text' : 'password';
+    eyeIcon.innerHTML = show ? eyeClosed : eyeOpen;
+    pwdToggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  });
+</script>
+
+{% endblock %}

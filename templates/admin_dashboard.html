@@ -1,0 +1,407 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .stat-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  }
+  
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .stat-icon.blue { background: rgba(59,130,246,0.1); color: #3B82F6; }
+  .stat-icon.green { background: rgba(16,185,129,0.1); color: #10B981; }
+  .stat-icon.purple { background: rgba(139,92,246,0.1); color: #8B5CF6; }
+  .stat-icon.amber { background: rgba(245,158,11,0.1); color: #F59E0B; }
+  .stat-icon.red { background: rgba(239,68,68,0.1); color: #EF4444; }
+  
+  .stat-value {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  
+  .stat-change {
+    font-size: 12px;
+    color: #10B981;
+    margin-top: 8px;
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .dashboard-card {
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  
+  .card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  
+  .card-header h3 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .card-body {
+    padding: 24px;
+  }
+  
+  .subject-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .subject-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .subject-name {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  
+  .subject-count {
+    background: rgba(245,158,11,0.1);
+    color: #F59E0B;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .mode-stats {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .mode-item {
+    flex: 1;
+    text-align: center;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 12px;
+  }
+  
+  .mode-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  
+  .mode-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  
+  .activity-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .activity-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .activity-detail {
+    flex: 1;
+  }
+  
+  .activity-action {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .activity-time {
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  
+  /* Feedback Quick Stats */
+  .feedback-preview {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  
+  .feedback-preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .feedback-preview-item:last-child {
+    border-bottom: none;
+  }
+  
+  .rating-stars {
+    display: inline-flex;
+    gap: 2px;
+  }
+  
+  .rating-stars svg {
+    width: 12px;
+    height: 12px;
+    fill: #F59E0B;
+    stroke: none;
+  }
+  
+  .view-all-link {
+    margin-top: 12px;
+    text-align: center;
+  }
+  
+  .view-all-link a {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div>
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-family: 'Clash Display', sans-serif; font-size: 28px; margin-bottom: 8px;">Dashboard</h1>
+    <p style="color: var(--ink-soft);">Welcome back, {{ session.admin_name or 'Admin' }}! Here's what's happening today.</p>
+  </div>
+  
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ total_teachers }}</div>
+      <div class="stat-label">Total Teachers</div>
+      <div class="stat-change">+{{ new_teachers }} new this month</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ total_students }}</div>
+      <div class="stat-label">Total Students</div>
+      <div class="stat-change">+{{ new_students }} new this month</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ active_teachers }}</div>
+      <div class="stat-label">Active Teachers</div>
+      <div class="stat-change">Currently teaching</div>
+    </div>
+    
+    <!-- Feedback Stat Card -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="stat-value">{{ pending_feedback_count or 0 }}</div>
+      <div class="stat-label">Pending Feedback</div>
+      <div class="stat-change">Awaiting review</div>
+    </div>
+  </div>
+  
+  <div class="dashboard-grid">
+    <!-- Popular Subjects -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3>🔥 Most Searched Subjects</h3>
+      </div>
+      <div class="card-body">
+        <ul class="subject-list">
+          {% for subject in popular_subjects %}
+          <li class="subject-item">
+            <span class="subject-name">{{ subject.search_term }}</span>
+            <span class="subject-count">{{ subject.search_count }} searches</span>
+          </li>
+          {% else %}
+          <li class="subject-item">No search data yet</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Online vs Offline -->
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h3>📊 Teaching Mode Distribution</h3>
+      </div>
+      <div class="card-body">
+        <div class="mode-stats">
+          <div class="mode-item">
+            <div class="mode-value">{{ tutor_modes.online or 0 }}</div>
+            <div class="mode-label">🌐 Online</div>
+          </div>
+          <div class="mode-item">
+            <div class="mode-value">{{ tutor_modes.offline or 0 }}</div>
+            <div class="mode-label">📍 Offline</div>
+          </div>
+          <div class="mode-item">
+            <div class="mode-value">{{ tutor_modes.both or 0 }}</div>
+            <div class="mode-label">🔄 Both</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Feedback Section -->
+  <div class="dashboard-card" style="margin-bottom: 32px;">
+    <div class="card-header">
+      <h3>⭐ Recent Feedback</h3>
+    </div>
+    <div class="card-body">
+      {% if recent_feedback %}
+        {% for fb in recent_feedback %}
+        <div class="feedback-preview-item">
+          <div>
+            <strong>{{ fb.user_name }}</strong>
+            <div class="rating-stars" style="margin-top: 4px;">
+              {% for i in range(fb.rating) %}
+              <svg viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+              {% endfor %}
+            </div>
+            <div style="font-size: 13px; color: var(--ink-mid); margin-top: 5px;">{{ fb.title or 'No title' }}</div>
+          </div>
+          <div>
+            <span class="feedback-badge" style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; background: {% if fb.status == 'pending' %}#FEF3C7{% elif fb.status == 'approved' %}#D1FAE5{% else %}#FEE2E2{% endif %}; color: {% if fb.status == 'pending' %}#D97706{% elif fb.status == 'approved' %}#059669{% else %}#DC2626{% endif %};">
+              {{ fb.status|title }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align: center; padding: 20px; color: var(--ink-soft);">
+          No feedback submitted yet.
+        </div>
+      {% endif %}
+      
+      <div class="view-all-link">
+        <a href="/admin/feedback">📋 View All Feedback & Testimonials →</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Activity -->
+  <div class="dashboard-card">
+    <div class="card-header">
+      <h3>📋 Recent Activity</h3>
+    </div>
+    <div class="card-body">
+      <ul class="activity-list">
+        {% for activity in recent_activities %}
+        <li class="activity-item">
+          <div class="activity-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="activity-detail">
+            <div class="activity-action">{{ activity.action }}</div>
+            <div class="activity-time">{{ activity.created_at.strftime('%Y-%m-%d %H:%M') if activity.created_at else 'Just now' }}</div>
+          </div>
+        </li>
+        {% else %}
+        <li class="activity-item">No recent activity</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

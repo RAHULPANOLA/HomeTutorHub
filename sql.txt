@@ -1,0 +1,46 @@
+Student_table
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    password VARCHAR(255) NOT NULL,
+    city VARCHAR(100),
+    my_points INT DEFAULT 0 NOT NULL, -- Student wallet
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Teacher TABLE
+CREATE TABLE teachers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    password VARCHAR(255) NOT NULL,
+    qualification VARCHAR(255),
+    experience INT DEFAULT 0,
+    city VARCHAR(100),
+    photo VARCHAR(255),
+    points INT DEFAULT 50,           -- Price student pays to unlock
+    my_points INT DEFAULT 0 NOT NULL, -- Teacher wallet to accept leads
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+teacher subject
+CREATE TABLE teacher_subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id INT,
+    subject_name VARCHAR(100),
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+);
+teacher request
+CREATE TABLE teacher_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    teacher_id INT,
+    status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+);

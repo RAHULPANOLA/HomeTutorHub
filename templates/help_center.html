@@ -1,0 +1,447 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .help-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .help-hero {
+    background: linear-gradient(135deg, var(--saffron), var(--saffron-2));
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+  }
+  
+  .help-hero h1 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+  
+  .help-search {
+    max-width: 500px;
+    margin: 24px auto 0;
+    position: relative;
+  }
+  
+  .help-search input {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .help-search i {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+  }
+  
+  .category-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    border-bottom: 2px solid var(--border);
+    flex-wrap: wrap;
+  }
+  
+  .category-tab {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  
+  .category-tab.active {
+    color: var(--saffron);
+  }
+  
+  .category-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--saffron);
+  }
+  
+  .category-tab:hover {
+    color: var(--saffron);
+  }
+  
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  
+  .article-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    border-color: var(--saffron);
+  }
+  
+  .article-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--saffron-pale);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  
+  .article-icon i {
+    font-size: 24px;
+    color: var(--saffron);
+  }
+  
+  .article-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .article-card p {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Modal Styles */
+  .help-modal .modal-content {
+    border-radius: 24px;
+    overflow: hidden;
+  }
+  
+  .help-modal .modal-header {
+    background: linear-gradient(135deg, var(--saffron), var(--saffron-2));
+    color: white;
+    border: none;
+    padding: 24px 28px;
+  }
+  
+  .help-modal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+  }
+  
+  .help-modal .modal-body {
+    padding: 28px;
+  }
+  
+  .step-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .step-item:last-child {
+    border-bottom: none;
+  }
+  
+  .step-item.highlight {
+    background: var(--saffron-pale);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 12px;
+    color: var(--saffron);
+    font-weight: 600;
+  }
+  
+  .quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding: 24px;
+    background: var(--surface);
+    border-radius: 20px;
+  }
+  
+  .quick-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .quick-action-btn:hover {
+    border-color: var(--saffron);
+    color: var(--saffron);
+    transform: translateY(-2px);
+  }
+  
+  .faq-section {
+    margin-top: 48px;
+  }
+  
+  .faq-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  
+  .faq-question {
+    padding: 18px 24px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .faq-question:hover {
+    background: var(--surface);
+  }
+  
+  .faq-answer {
+    padding: 0 24px 20px;
+    display: none;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+  }
+  
+  .faq-answer.show {
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .help-hero {
+      padding: 30px 20px;
+    }
+    .help-hero h1 {
+      font-size: 28px;
+    }
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+    .quick-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<div class="help-container">
+  <div class="help-hero">
+    <h1>How can we help you?</h1>
+    <p>Find guides, tutorials, and answers to common questions</p>
+    <div class="help-search">
+      <input type="text" id="searchInput" placeholder="Search for help articles...">
+      <i class="fas fa-search"></i>
+    </div>
+  </div>
+  
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a href="/student_register" class="quick-action-btn">
+      <i class="fas fa-user-plus"></i> Register as Student
+    </a>
+    <a href="/teacher_register" class="quick-action-btn">
+      <i class="fas fa-chalkboard-user"></i> Register as Teacher
+    </a>
+    <a href="/buy_points" class="quick-action-btn">
+      <i class="fas fa-coins"></i> Buy Points
+    </a>
+    <a href="/tuition_request" class="quick-action-btn">
+      <i class="fas fa-pen-alt"></i> Post Request
+    </a>
+  </div>
+  
+  <!-- Category Tabs -->
+  <div class="category-tabs">
+    <button class="category-tab active" data-category="all">All Guides</button>
+    <button class="category-tab" data-category="student">For Students</button>
+    <button class="category-tab" data-category="teacher">For Teachers</button>
+    <button class="category-tab" data-category="general">General</button>
+  </div>
+  
+  <!-- Articles Grid -->
+  <div class="articles-grid" id="articlesGrid">
+    {% for article in articles %}
+    <div class="article-card" data-category="{{ article.category }}" data-title="{{ article.title }}" data-content="{{ article.content }}">
+      <div class="article-icon">
+        <i class="fas {{ article.icon }}"></i>
+      </div>
+      <h3>{{ article.title }}</h3>
+      <p>{{ article.content|striptags|truncate(100) }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <h2 style="font-family: 'Clash Display', sans-serif; margin-bottom: 24px;">Frequently Asked Questions</h2>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>How long does it take to get verified as a teacher?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Teacher verification usually takes 24-48 hours. Our admin team reviews all documents and qualifications before approving your profile.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>What payment methods are accepted?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        We accept all major credit/debit cards, UPI, Netbanking, and Wallets through Razorpay. All payments are secure and encrypted.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Can I get a refund for unused points?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Points are non-refundable but never expire. You can use them anytime to unlock tutor contacts or student requests.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>How do I reset my password?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        Click on "Forgot Password" on the login page. You'll need to answer your security question to reset your password.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Is there any fee for posting tuition requests?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        No, posting tuition requests is completely free for students. You only pay points when you want to unlock teacher contact details.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Help Article Modal -->
+<div class="modal fade help-modal" id="helpModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalTitle">How to Guide</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalContent">
+        <!-- Dynamic content will be inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  const articles = document.querySelectorAll('.article-card');
+  const categoryTabs = document.querySelectorAll('.category-tab');
+  let currentCategory = 'all';
+  
+  function filterArticles() {
+    const searchTerm = searchInput.value.toLowerCase();
+    
+    articles.forEach(article => {
+      const title = article.getAttribute('data-title').toLowerCase();
+      const content = article.getAttribute('data-content').toLowerCase();
+      const category = article.getAttribute('data-category');
+      
+      const matchesSearch = searchTerm === '' || title.includes(searchTerm) || content.includes(searchTerm);
+      const matchesCategory = currentCategory === 'all' || category === currentCategory;
+      
+      if (matchesSearch && matchesCategory) {
+        article.style.display = 'block';
+      } else {
+        article.style.display = 'none';
+      }
+    });
+  }
+  
+  // Category filter
+  categoryTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      categoryTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCategory = tab.getAttribute('data-category');
+      filterArticles();
+    });
+  });
+  
+  // Search input
+  searchInput.addEventListener('keyup', filterArticles);
+  
+  // Modal open
+  const modal = new bootstrap.Modal(document.getElementById('helpModal'));
+  
+  articles.forEach(article => {
+    article.addEventListener('click', () => {
+      const title = article.querySelector('h3').innerText;
+      const content = article.getAttribute('data-content');
+      
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalContent').innerHTML = content;
+      modal.show();
+    });
+  });
+  
+  // FAQ toggle
+  const faqQuestions = document.querySelectorAll('.faq-question');
+  faqQuestions.forEach(question => {
+    question.addEventListener('click', () => {
+      const answer = question.nextElementSibling;
+      answer.classList.toggle('show');
+      const icon = question.querySelector('i');
+      if (answer.classList.contains('show')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0)';
+      }
+    });
+  });
+</script>
+
+{% endblock %}

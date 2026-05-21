@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tl-page {
+    width: 100%;
+    min-height: 100vh;
+    display: block;
+    background: var(--surface, #f5f0eb);
+    padding: 32px 16px 48px;
+  }
+
+  .tl-card {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1.5px solid rgba(232,114,12,0.25);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  /* ── HEADER ── */
+  .tl-header {
+    display: block;
+    width: 100%;
+    background: #111827;
+    border-radius: 18px 18px 0 0;
+    padding: 28px 24px 26px;
+    position: relative;
+  }
+
+  .tl-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 18px 18px 0 0;
+    background: linear-gradient(90deg, #E8720C, #f59e0b 60%, transparent);
+  }
+
+  .tl-header::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; right: -30px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(232,114,12,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .tl-icon-box {
+    position: relative; z-index: 1;
+    width: 48px; height: 48px;
+    background: rgba(232,114,12,0.12);
+    border: 1px solid rgba(232,114,12,0.3);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .tl-icon-box svg {
+    width: 22px; height: 22px;
+    fill: none; stroke: #E8720C;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .tl-eyebrow {
+    position: relative; z-index: 1;
+    display: block;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #f59e0b;
+    margin-bottom: 5px;
+  }
+
+  .tl-title {
+    position: relative; z-index: 1;
+    display: block;
+    font-family: 'Clash Display', sans-serif;
+    font-size: 24px; font-weight: 700;
+    color: #ffffff; letter-spacing: -0.02em;
+    margin-bottom: 5px;
+  }
+
+  .tl-subtitle {
+    position: relative; z-index: 1;
+    display: block;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ── BODY ── */
+  .tl-body {
+    display: block;
+    width: 100%;
+    padding: 28px 24px 30px;
+    background: #ffffff;
+    border-radius: 0 0 18px 18px;
+  }
+
+  /* Flash */
+  .tl-flash {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    font-size: 13px; font-weight: 500; color: #c0392b;
+  }
+
+  /* Fields */
+  .tl-field { display: block; margin-bottom: 18px; }
+
+  .tl-label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    color: #555;
+    margin-bottom: 7px;
+  }
+
+  .tl-pwd-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+  }
+
+  .tl-pwd-row .tl-label { margin-bottom: 0; }
+
+  .tl-forgot {
+    font-size: 12px; font-weight: 600;
+    color: #E8720C; text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .tl-wrap { position: relative; display: block; }
+
+  .tl-ico {
+    position: absolute;
+    left: 13px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px;
+    fill: none; stroke: #bbb;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    pointer-events: none;
+    transition: stroke 0.15s;
+    z-index: 1;
+  }
+
+  .tl-wrap:focus-within .tl-ico { stroke: #E8720C; }
+
+  .tl-input {
+    display: block;
+    width: 100%;
+    background: #f8f4f0;
+    border: 1.5px solid #e5ddd5;
+    border-radius: 11px;
+    padding: 13px 13px 13px 42px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #1a1a1a;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  .tl-input::placeholder { color: #bbb; }
+
+  .tl-input:focus {
+    border-color: #E8720C;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(232,114,12,0.12);
+  }
+
+  .tl-has-toggle { padding-right: 44px; }
+
+  .tl-eye {
+    position: absolute;
+    right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none;
+    padding: 4px; cursor: pointer;
+    color: #bbb;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+
+  .tl-eye svg {
+    width: 16px; height: 16px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Submit */
+  .tl-submit {
+    display: flex;
+    width: 100%;
+    align-items: center; justify-content: center; gap: 8px;
+    background: linear-gradient(135deg, #E8720C 0%, #f59e0b 100%);
+    color: #fff;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 15px; font-weight: 700;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(232,114,12,0.3);
+    margin-top: 6px; margin-bottom: 24px;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .tl-submit:active { transform: scale(0.98); opacity: 0.9; }
+
+  .tl-submit svg {
+    width: 16px; height: 16px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .tl-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .tl-divider::before,
+  .tl-divider::after {
+    content: ''; flex: 1; height: 1px; background: #ede6de;
+  }
+
+  .tl-divider span {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #bbb;
+  }
+
+  /* Register row */
+  .tl-reg-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .tl-reg-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: #f8f4f0;
+    border: 1.5px solid #e5ddd5;
+    color: #444;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 13px; font-weight: 700;
+    padding: 12px 8px;
+    border-radius: 11px;
+    text-decoration: none;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .tl-reg-btn svg {
+    width: 15px; height: 15px;
+    fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
+  .tl-reg-btn:hover {
+    border-color: #E8720C;
+    color: #E8720C;
+    background: rgba(232,114,12,0.05);
+    text-decoration: none;
+  }
+
+  /* Nudge */
+  .tl-nudge {
+    text-align: center;
+    padding-top: 18px;
+    border-top: 1px solid #f0e8df;
+    font-size: 13px; color: #aaa;
+  }
+
+  .tl-nudge a {
+    color: #E8720C; font-weight: 700; text-decoration: none;
+  }
+
+  @media (max-width: 380px) {
+    .tl-reg-row { grid-template-columns: 1fr; }
+    .tl-header { padding: 24px 18px 22px; }
+    .tl-body { padding: 22px 18px 26px; }
+    .tl-title { font-size: 21px; }
+  }
+</style>
+
+<div class="tl-page">
+  <div class="tl-card">
+
+    <!-- HEADER -->
+    <div class="tl-header">
+      <div class="tl-icon-box">
+        <svg viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <span class="sl-eyebrow">
+  <span style="color: white;">Home</span>
+  <span style="color: var(--saffron);">Tutor</span>
+  <span style="color: white;">Hub</span>
+</span>
+    </div>
+
+    <!-- BODY -->
+    <div class="tl-body">
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="tl-flash">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              {{ msg }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+
+        <!-- Email -->
+        <div class="tl-field">
+          <label class="tl-label" for="tl-email">Email Address</label>
+          <div class="tl-wrap">
+            <svg class="tl-ico" viewBox="0 0 24 24">
+              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <input
+              id="tl-email" type="email" name="email"
+              class="tl-input"
+              placeholder="name@email.com"
+              autocomplete="email" required>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="tl-field">
+          <div class="tl-pwd-row">
+            <label class="tl-label" for="tl-pwd">Password</label>
+            <a href="/forgot_password" class="tl-forgot">Forgot password?</a>
+          </div>
+          <div class="tl-wrap">
+            <svg class="tl-ico" viewBox="0 0 24 24">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <input
+              id="tl-pwd" type="password" name="password"
+              class="tl-input tl-has-toggle"
+              placeholder="Enter your password"
+              autocomplete="current-password" required>
+            <button type="button" class="tl-eye" id="tl-eye-btn" aria-label="Show password">
+              <svg id="tl-eye-svg" viewBox="0 0 24 24">
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="tl-submit">
+          <svg viewBox="0 0 24 24">
+            <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+          </svg>
+          Sign In to Dashboard
+        </button>
+
+      </form>
+
+      <div class="tl-divider"><span>New here?</span></div>
+
+      <div class="tl-reg-row">
+        <a href="/teacher_register" class="tl-reg-btn">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Register as Tutor
+        </a>
+        <a href="/student_login" class="tl-reg-btn">
+          <svg viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+          Student Login
+        </a>
+      </div>
+
+      <div class="tl-nudge">
+        Admin access? <a href="/admin_login">Login here</a>
+        &nbsp;·&nbsp;
+        <a href="/student_login">Student login</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var eyeOpen = '<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+    var eyeClosed = '<path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+
+    document.getElementById('tl-eye-btn').addEventListener('click', function () {
+      var inp = document.getElementById('tl-pwd');
+      var show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      document.getElementById('tl-eye-svg').innerHTML = show ? eyeClosed : eyeOpen;
+      this.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
+  })();
+</script>
+
+{% endblock %}

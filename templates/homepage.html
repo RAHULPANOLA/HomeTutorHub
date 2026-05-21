@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: var(--ink); border-radius: 24px; padding: 60px 20px; text-align: center; margin-bottom: 60px;">
+        <h1 style="font-family: 'Clash Display', sans-serif; font-size: 48px; color: white; margin-bottom: 20px;">Home Tutor Hub</h1>
+        <p style="font-size: 18px; color: rgba(255,255,255,0.7); margin-bottom: 30px;">Find the best tutors in India. Connect with experienced teachers.</p>
+        <a href="/student_register" style="background: var(--saffron); color: white; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 600;">Get Started</a>
+    </div>
+
+    <h2 style="text-align: center; margin-bottom: 40px;">How It Works</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px;">
+        <div style="background: var(--white); border-radius: 16px; padding: 24px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: var(--saffron); margin-bottom: 12px;">1</div>
+            <h3>Register Free</h3>
+            <p>Create your account in minutes</p>
+        </div>
+        <div style="background: var(--white); border-radius: 16px; padding: 24px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: var(--saffron); margin-bottom: 12px;">2</div>
+            <h3>Search Tutors</h3>
+            <p>Filter by subject, city, or mode</p>
+        </div>
+        <div style="background: var(--white); border-radius: 16px; padding: 24px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: var(--saffron); margin-bottom: 12px;">3</div>
+            <h3>Unlock Contact</h3>
+            <p>Connect with tutors directly</p>
+        </div>
+        <div style="background: var(--white); border-radius: 16px; padding: 24px; text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: var(--saffron); margin-bottom: 12px;">4</div>
+            <h3>Start Learning</h3>
+            <p>Begin your sessions</p>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; margin-bottom: 40px;">Popular Subjects</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 60px;">
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">Mathematics</div>
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">Physics</div>
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">Chemistry</div>
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">Biology</div>
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">English</div>
+        <div style="background: var(--white); border-radius: 12px; padding: 16px; text-align: center;">Computer Science</div>
+    </div>
+
+    <div style="background: var(--surface); border-radius: 24px; padding: 40px; text-align: center; margin-bottom: 60px;">
+        <h2>Contact Us</h2>
+        <p style="margin: 12px 0;"><strong>Phone:</strong> 7869955505</p>
+        <p style="margin: 12px 0;"><strong>Email:</strong> hometutorhubindia@gmail.com</p>
+    </div>
+
+    <div style="background: linear-gradient(135deg, var(--saffron), var(--saffron-2)); border-radius: 24px; padding: 48px; text-align: center;">
+        <h2 style="color: white; margin-bottom: 16px;">Ready to Find Your Perfect Tutor?</h2>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 24px;">Join thousands of students already learning smarter</p>
+        <a href="/student_register" style="background: white; color: var(--saffron); padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 600;">Register Free</a>
+    </div>
+</div>
+
+{% endblock %}
