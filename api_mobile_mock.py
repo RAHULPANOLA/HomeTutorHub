@@ -3,6 +3,11 @@ from flask_cors import CORS
 from datetime import datetime
 from db_config import get_db_connection
 
+
+# Mock db_config for deployment
+def get_db_connection():
+    return None
+
 app = Flask(__name__)
 CORS(app)
 
