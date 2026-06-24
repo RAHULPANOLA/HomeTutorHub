@@ -3,6 +3,8 @@ from flask_cors import CORS
 from datetime import datetime
 from db_config import get_db_connection
 
+
+
 try:
     from db_config import get_db_connection
 except ImportError:
@@ -12,6 +14,61 @@ except ImportError:
 
 app = Flask(__name__)
 CORS(app)
+
+# Add root route for Render health check
+@app.route('/')
+def home():
+    return jsonify({
+        'status': 'online',
+        'message': 'HomeTutorHub API is running',
+        'version': '1.0.0',
+        'endpoints': [
+            '/api/login',
+            '/api/teachers',
+            '/api/register',
+            '/api/post_request',
+            '/api/all_requests',
+            '/api/accept_request',
+            '/api/my_requests',
+            '/api/offline_request',
+            '/api/my_offline_requests',
+            '/api/add_points',
+            '/api/get_student_points',
+            '/api/submit_feedback',
+            '/api/extend_trial',
+            '/api/schedule_demo',
+            '/api/course_enrolled_students',
+            '/api/update_course',
+            '/api/delete_course',
+            '/api/teacher_courses',
+            '/api/schedule_live_class',
+            '/api/teacher_live_classes',
+            '/api/delete_live_class',
+            '/api/teacher_payment_requests',
+            '/api/teacher_payment_history',
+            '/api/mark_payment_received',
+            '/api/teacher_profile',
+            '/api/update_teacher_profile',
+            '/api/student_profile',
+            '/api/update_student_profile',
+            '/api/student_change_password',
+        ]
+    })
+
+# Also add this for /api/ route
+@app.route('/api/')
+def api_home():
+    return jsonify({
+        'status': 'online',
+        'message': 'API is working',
+        'endpoints': [
+            '/api/login',
+            '/api/teachers',
+            '/api/register',
+            '/api/post_request',
+            # ... list all endpoints
+        ]
+    })
 
 # Store data in memory
 tuition_requests = []
